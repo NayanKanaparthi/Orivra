@@ -96,7 +96,15 @@ The repository contains `orivra/` (evidence navigation and desktop setup), `serv
 
 The [desktop engineering notes](docs/DESKTOP_BETA.md) describe packaging and historical checks.
 [Draft release notes](docs/releases/0.2.0-beta.1.md) identify the exact candidate artifact.
-Public source/distribution terms are pending owner approval; no open-source licence is claimed.
+
+## Licence
+
+Orivra and MailWeave's original software and accompanying documentation are licensed under
+the [MIT License](LICENSE), copyright © 2026 Nayan Kanaparthi. You may use, modify, and
+redistribute them, including commercially, subject to the licence's notice requirements.
+Third-party software, models, and separately licensed assets retain their own terms; see
+[third-party notices](THIRD_PARTY_NOTICES.md). MIT licensing does not establish Google
+data-access approval or change this beta's current publication status.
 
 ## Contact
 

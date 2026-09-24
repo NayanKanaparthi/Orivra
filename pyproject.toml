@@ -2,6 +2,8 @@
 name = "mailweave-workspace"
 version = "0.0.0"
 description = "MailWeave workspace root: server + harness + repo tooling."
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
     "mailweave",

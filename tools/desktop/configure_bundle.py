@@ -10,8 +10,8 @@
 the Desktop-app client JSON exactly as Google's console produced it - a client id and the
 installed-app client secret, which Google does not treat as confidential for desktop clients.
 It adds no token: none exists until each tester consents on their own machine, and that token
-never leaves it. The output is still a file to share only with invited testers, because it names
-the beta's Google project.
+never leaves it. Configuring a bundle does not establish Google's permission for public OAuth
+access; distribution of the configured application must meet Google's applicable requirements.
 
 **What it refuses.** A client that is not a Desktop-app (`installed`) client; a bundle that
 already has one; and any client whose id matches a `--refuse` file's. Pass the harness client

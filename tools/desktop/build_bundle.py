@@ -215,14 +215,14 @@ def _manifest(platform: str) -> dict[str, object]:
     return {
         "manifest_version": "0.3",
         "name": "orivra-beta",
-        "display_name": "Orivra (invite-only beta)",
+        "display_name": "Orivra (beta)",
         "version": _version(),
         "description": (
             "Ask Claude about your Gmail, read-only. Orivra retrieves the evidence on this "
             "computer and shows what it did not see."
         ),
         "long_description": (
-            "An invite-only beta. After installing, ask Claude to set up Orivra: you connect "
+            "An early beta. After installing, ask Claude to set up Orivra: you connect "
             "Gmail through the beta's Google application (read-only; until the application "
             "completes Google's verification for this permission, Google shows an "
             "unverified-app warning before consent), the two local models download with "
@@ -230,7 +230,7 @@ def _manifest(platform: str) -> dict[str, object]:
             "computer. The only permission requested is Gmail read-only."
         ),
         "author": {"name": "Orivra beta"},
-        "license": "Proprietary - invite-only beta; not for redistribution",
+        "license": "MIT",
         "server": {
             "type": "binary",
             "entry_point": "server/orivra-beta",
@@ -240,6 +240,12 @@ def _manifest(platform: str) -> dict[str, object]:
         "compatibility": {"platforms": spec["manifest_platforms"]},
         "keywords": ["gmail", "email", "read-only", "evidence"],
     }
+
+
+def _copy_notices(stage: Path) -> None:
+    """Carry the project's licence and distinguish it from dependency licences."""
+    for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
+        shutil.copyfile(REPO / name, stage / name)
 
 
 def _compile(stage: Path, compiler: Path) -> None:
@@ -321,6 +327,7 @@ def build(platform: str, archive: Path, out: Path, build_python: Path) -> Path:
         shutil.copyfile(HERE / "bundle" / "orivra-beta", launcher)
         launcher.chmod(0o755)
         shutil.copyfile(REPO / "models.lock", stage / "server" / "models.lock")
+        _copy_notices(stage)
         (stage / "manifest.json").write_text(json.dumps(_manifest(platform), indent=2) + "\n")
         _compile(stage, build_python)
         name = f"orivra-beta-{_version()}-{platform}-unconfigured.mcpb"
