@@ -1,5 +1,9 @@
 # Private initial source snapshot
 
+**Historical import record.** This describes the initial `ac84704` snapshot. The owner later
+selected MIT; see [the licensing record](reviews/MIT_LICENSING_2026-09-24.md) for the subsequent
+source and installer changes. Neither step made the repository public.
+
 This repository starts with a new, parentless commit. It does not import the development
 repository's Git history, branches, or tags. It is a private source backup and review
 checkpoint, not a public release or an approval to redistribute the desktop installer.

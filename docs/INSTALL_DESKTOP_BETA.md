@@ -3,9 +3,10 @@
 This is the no-Terminal path for Claude Desktop. You do not create a Google Cloud project,
 download an OAuth JSON file, or install Python yourself.
 
-**Availability:** the configured installer has been built, and the owner reports successful
-installation and setup. It has not been published on GitHub. These instructions are for a
-beta file supplied by the maintainer; they do not announce an approved public launch.
+**Availability:** an MIT-licensed candidate has been rebuilt for the private draft release.
+The owner reported successful installation and setup of its earlier invite-only build; the
+new candidate has not been reinstalled in Claude Desktop. These instructions are for a beta
+file supplied by the maintainer; they do not announce a public launch.
 
 ## Before you start
 
@@ -19,7 +20,7 @@ beta file supplied by the maintainer; they do not announce an approved public la
 
 The exact candidate file is **`Orivra-Beta-0.2.0-beta.1.mcpb`**. When a release is published,
 the maintainer will attach the installer and checksum to
-[Orivra Releases](https://github.com/NayanKanaparthi/Orivra/releases). They are not there yet.
+[Orivra Releases](https://github.com/NayanKanaparthi/Orivra/releases). Only a private draft exists.
 Do not download a similarly named file from an unrelated repository. The source ZIP is not
 the installer.
 
@@ -33,7 +34,7 @@ In Claude Desktop, open **Settings → Extensions → Advanced settings**. Under
 Developer**, choose **Install Extension…**, select the `.mcpb` file, and follow the prompts.
 This is Anthropic's [custom-extension installation path](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop).
 
-The current candidate displays **“Orivra (invite-only beta)”**. It is a custom extension, not
+The MIT candidate displays **“Orivra (beta)”**. It is a custom extension, not
 a claim of Anthropic-directory review or Apple notarization. If installation is blocked by a
 security policy, contact the maintainer or your administrator; do not disable OS protections.
 

@@ -29,9 +29,9 @@ is correct or complete.
 
 ## Install
 
-**Release status: preparation only. There is no public installer release yet.** The owner has
-reported successful installation and setup of the configured beta on their Mac. Public
-distribution has not been approved, and Google's Gmail data-access verification is incomplete.
+**Release status: private draft. There is no public installer release yet.** The owner has
+reported successful installation and setup of the earlier configured beta on their Mac.
+The MIT candidate is rebuilt; Google's Gmail data-access verification remains incomplete.
 
 - **Claude Desktop extension:** Apple Silicon Mac, macOS 14 or later. Python and the app's
   Google OAuth client are included; users do not need Terminal or their own Google Cloud
@@ -42,8 +42,8 @@ distribution has not been approved, and Google's Gmail data-access verification 
   requirements still apply to your project.
 
 The intended download destination is this repository's
-[Releases page](https://github.com/NayanKanaparthi/Orivra/releases). No asset is available there
-yet; do not treat a source-code archive as the desktop installer.
+[Releases page](https://github.com/NayanKanaparthi/Orivra/releases). No public asset is available
+there yet; do not treat a source-code archive as the desktop installer.
 
 ## Your mail and your permissions
 

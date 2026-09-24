@@ -10,9 +10,11 @@ The original 2026-09-23 build observations below are retained as history. In par
 §8.B–C describe the older unconfigured artifact, not the current installer, and §8.E describes
 what had not been observed **at the time**. Their older hashes, sizes, and “not yet run”
 statements must not be used as the current package status. No public asset has been uploaded.
-The current candidate still carries its invite-only display name and distribution restriction;
-the [upload review](reviews/RELEASE_UPLOAD_REVIEW_2026-09-24.md) records these without changing
-the tested package. The remaining sections are the original engineering/reference material.
+The owner subsequently selected MIT. The rebuilt candidate displays `Orivra (beta)`, carries
+the MIT licence, and retains third-party notices. See the
+[MIT licensing record](reviews/MIT_LICENSING_2026-09-24.md) and current release notes for its
+new checksum. The earlier [upload review](reviews/RELEASE_UPLOAD_REVIEW_2026-09-24.md) describes
+the preserved pre-MIT artifact. The remaining sections are original historical/reference material.
 
 **Status, 2026-09-23.** Built and checked, not yet run on a Mac. The macOS bundle has been
 built twice on two machines with byte-identical results, and read file by file. The same build
