@@ -1,0 +1,52 @@
+name: MailWeave beta problem
+description: Report an installation or tool problem without sharing private mail or credentials.
+title: "[Beta]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue will be public if the repository is public. Do not include email content,
+        tokens, OAuth files, authorization URLs, raw tool results, or unredacted logs.
+        For a suspected security or privacy issue, email kanaparthinayan@gmail.com privately.
+  - type: input
+    id: version
+    attributes:
+      label: Orivra / MailWeave version
+      placeholder: 0.2.0-beta.1
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Mac and Claude Desktop versions
+      description: Include macOS version and Apple Silicon model; omit serial numbers and account details.
+    validations:
+      required: true
+  - type: dropdown
+    id: step
+    attributes:
+      label: Where did the problem happen?
+      options:
+        - Installing the extension
+        - Google authorization
+        - Downloading models or finishing setup
+        - Searching or reading messages
+        - Following evidence or opening a graph
+        - Reconnecting or removing the extension
+        - Self-managed installation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: What happened, and what did you expect?
+      description: Give short steps using fictional names and text. Include a redacted error, not a full log.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed credentials, private email, authorization links, and identifying account details.
+          required: true

@@ -32,6 +32,9 @@ is correct or complete.
 **Release status: private draft. There is no public installer release yet.** The owner has
 reported successful installation and setup of the earlier configured beta on their Mac.
 The MIT candidate is rebuilt; Google's Gmail data-access verification remains incomplete.
+The [launch packet](docs/releases/LAUNCH_PACKET_0.2.0-beta.1.md) records preparation of that
+exact installer, and [known limitations](docs/KNOWN_LIMITATIONS.md) explain what early users
+should expect. Preparation does not announce public availability.
 
 - **Claude Desktop extension:** Apple Silicon Mac, macOS 14 or later. Python and the app's
   Google OAuth client are included; users do not need Terminal or their own Google Cloud

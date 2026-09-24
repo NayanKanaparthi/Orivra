@@ -8,6 +8,10 @@ The owner reported successful installation and setup of its earlier invite-only 
 new candidate has not been reinstalled in Claude Desktop. These instructions are for a beta
 file supplied by the maintainer; they do not announce a public launch.
 
+Read the [known limitations](KNOWN_LIMITATIONS.md) before connecting. The
+[launch packet](releases/LAUNCH_PACKET_0.2.0-beta.1.md) identifies the exact MIT candidate and
+its verification results; do not use the older invite-only installer's checksum.
+
 ## Before you start
 
 - An **Apple Silicon Mac (M-series), running macOS 14 or later**. This installer does not
