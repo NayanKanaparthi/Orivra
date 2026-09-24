@@ -1,0 +1,31 @@
+{
+  "what": "The unconfigured macOS arm64 bundle, built from the same tree on two machines, compared entry by entry.",
+  "bundle": "orivra-beta-0.2.0-beta.1-darwin-arm64-unconfigured.mcpb",
+  "builds": [
+    {
+      "machine": "cloud sandbox, x86_64 Linux",
+      "uv": "0.8.17",
+      "build_python": "CPython 3.12.14 (python-build-standalone 20260901, x86_64 Linux)",
+      "sha256": "f6e0bd882463e0b7ec35e22f02ad37e6bec8a943db4d50fa1360ec05f1baade3",
+      "zipped_bytes": 344380808,
+      "entries": 37649,
+      "unpacked_bytes": 1152607197
+    },
+    {
+      "machine": "the owner's Mac, its aarch64 Linux VM, from `git archive HEAD` (15fc262) plus this change",
+      "uv": "0.12.13",
+      "build_python": "CPython 3.12.14 (uv python install)",
+      "sha256": "f6e0bd882463e0b7ec35e22f02ad37e6bec8a943db4d50fa1360ec05f1baade3",
+      "zipped_bytes": 344380808,
+      "entries": 37649,
+      "unpacked_bytes": 1152607197
+    }
+  ],
+  "result": "byte-identical",
+  "found_on_the_way": [
+    "Before any comparison: direct_url.json in the two workspace packages named the build directory (found by inspect_bundle.py). Removed.",
+    "First comparison: 21 entries other than bytecode differed - 18 RECORD files listing console scripts the bundle drops (their hashes cover the build interpreter's path), uv's site-packages/.lock and the two workspace packages' uv_cache.json - and every .pyc differed. RECORDs are now pruned to the files the bundle carries, and those three files are dropped.",
+    "Second comparison: all 25,254 other entries identical, all 12,395 .pyc files different. They had been compiled by CPython 3.12.3 on one machine and 3.12.14 on the other. The builder now refuses any build Python but the bundled release.",
+    "Third comparison, both builds with CPython 3.12.14: byte-identical."
+  ]
+}

@@ -1,0 +1,34 @@
+import json,re,sys
+from collections import defaultdict,Counter
+sys.path.insert(0,'harness/src')
+from mailweave_harness.seed.world import PEOPLE, ENTITIES, BY_KEY
+m=json.load(open(sys.argv[1]))
+msgs=defaultdict(list)
+for x in m['messages']: msgs[x['thread_key']].append(x)
+names={p.display for p in PEOPLE}; places={e.formal for e in ENTITIES}
+def vtype(v):
+    if re.fullmatch(r"\d{2} \w+ \d{4}",v): return 'date'
+    if re.fullmatch(r"\d+\.\d+mm",v): return 'mm'
+    if re.fullmatch(r"\d+",v): return 'int'
+    if v in names: return 'person'
+    if v in places: return 'place'
+    return 'other'
+H=re.compile(r"(?:I spoke to (?P<a>[A-Z]\w+ [A-Z]\w+) about this and my note says (?P<va>[^.]+?)\.(?:\s|$)|(?P<b>[A-Z]\w+ [A-Z]\w+) told me (?P<vb>.+?) when I caught them|Second hand from (?P<c>[A-Z]\w+ [A-Z]\w+): (?P<vc>[^.]+?)\.(?:\s|$)|(?P<d>[A-Z]\w+ [A-Z]\w+) said (?P<vd>.+?), though I am going from memory|conversation with (?P<e>[A-Z]\w+ [A-Z]\w+) says (?P<ve>[^.]+?)\.(?:\s|$)|Passing on what (?P<f>[A-Z]\w+ [A-Z]\w+) told me: (?P<vf>[^.]+?)\.(?:\s|$))")
+tot=Counter(); per=defaultdict(Counter); exs=[]
+for t in m['answer_key']['threads']:
+    if not t['family'] or not t['answer']: continue
+    at=vtype(t['answer']); tot[t['family']]+=1
+    hit=False; f6=False
+    for x in msgs[t['thread_key']]:
+        if x['role']!='filler': continue
+        body=re.sub(r"\n-- \n.*$","",x['body'],flags=re.S)
+        for mm in H.finditer(body):
+            who=next(mm.group(k) for k in 'abcdef' if mm.group(k)); val=next(mm.group('v'+k) for k in 'abcdef' if mm.group('v'+k))
+            if vtype(val)==at:
+                hit=True
+                if len(exs)<12: exs.append((t['thread_key'],t['family'],x['position'],body.strip()[:130],'answer=',t['answer']))
+            if t['family']=='F6' and who==BY_KEY[t['facts']['author']].display: f6=True; exs.append(('F6-author',t['thread_key'],x['position'],body.strip()[:130]))
+    per[t['family']]['threads_with_undeclared_same_type_hearsay']+=hit
+    if t['family']=='F6': per['F6']['filler_hearsay_attributed_to_the_F6_author']+=f6
+for f in sorted(tot,key=lambda z:int(z[1:])): print(f,tot[f],dict(per[f]))
+for e in exs: print(e)

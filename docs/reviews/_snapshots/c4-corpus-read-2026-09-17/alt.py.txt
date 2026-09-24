@@ -1,0 +1,54 @@
+"""C4 exploratory query-free probes. Written once before running; not tuned after results.
+A: qf-1 unchanged except the value filter also accepts a proper name (capitalised word not in
+   the subject terms, not a person-first-name lead, not sentence-initial).
+B: 'latest unhedged': newest message naming a subject term + carrying value-or-name, with zero
+   negative qf-1 cues (hearsay/proposal/objection/reminder/hedge). No positive cues used.
+"""
+import json,re,sys
+from collections import defaultdict
+sys.path.insert(0,'harness/src')
+from mailweave_harness.evaluation import queryfree as qf
+m=json.load(open('review/sample-4311/manifest.json'))
+msgs=defaultdict(list)
+for x in m['messages']: msgs[x['thread_key']].append(x)
+for v in msgs.values(): v.sort(key=lambda x:x['position'])
+NAME=re.compile(r"(?<![.!?:]\s)(?<!^)\b[A-Z][a-z]{2,}(?:\s[A-Z][a-z]+)?\b")
+def has_value_or_name(text,terms):
+    if qf._VALUE.search(text): return True
+    for mm in NAME.finditer(text):
+        w=mm.group(0).split()[0]
+        if w not in terms: return True
+    return False
+def pickA(ms):
+    terms=qf.subject_terms(ms[0]['subject'])
+    best=None
+    for x in ms:
+        text=qf._strip(x['body'])
+        if terms and not any(t in text for t in terms): continue
+        if not has_value_or_name(text,terms): continue
+        c=qf.cue_counts(text); s=sum(qf.WEIGHTS[k]*c[k] for k in c)
+        key=(s,x['position'])
+        if best is None or key>best[0]: best=(key,x['position'])
+    return best and best[1]
+def pickB(ms):
+    terms=qf.subject_terms(ms[0]['subject'])
+    out=None
+    for x in ms:
+        text=qf._strip(x['body'])
+        if terms and not any(t in text for t in terms): continue
+        if not has_value_or_name(text,terms): continue
+        c=qf.cue_counts(text)
+        if any(c[k] for k in ('hearsay','proposal','objection','reminder','hedge')): continue
+        out=x['position']
+    return out
+res={'A':defaultdict(lambda:[0,0]),'B':defaultdict(lambda:[0,0])}
+for t in m['answer_key']['threads']:
+    if not t['family'] or not t['answer']: continue
+    ms=msgs[t['thread_key']]
+    for k,f in (('A',pickA),('B',pickB)):
+        p=f(ms); w=p in t['evidence_positions']
+        res[k][t['family']][0]+=w; res[k][t['family']][1]+=1
+        if k=='A': print(t['thread_key'],t['family'],'A->',p,'B->',pickB(ms),'ev',t['evidence_positions'])
+for k in res:
+    won=sum(v[0] for v in res[k].values()); n=sum(v[1] for v in res[k].values())
+    print(k, f"{won}/{n}={won/n:.3f}", {f:f"{v[0]}/{v[1]}" for f,v in sorted(res[k].items(),key=lambda z:int(z[0][1:]))})

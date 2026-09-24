@@ -1,0 +1,20 @@
+#!/bin/sh
+# Orivra (beta) - the Claude Desktop extension's launcher.
+#
+# Starts the Python this extension ships, and nothing else: never a python3 on PATH, never a
+# virtual environment, never a PYTHONPATH. `-I` (isolated mode) makes the interpreter ignore
+# every PYTHON* variable and the user's site directory as well, so the only packages it can
+# import are the ones inside this directory.
+set -u
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+
+# A zip extractor may not keep file modes. MailWeave refuses a credential-bearing file that
+# other local users can read, and the interpreter has to be executable.
+chmod 700 "$here/config" 2>/dev/null
+chmod 600 "$here/config/oauth-client.json" 2>/dev/null
+chmod 755 "$here/python/bin/python3.12" 2>/dev/null
+
+unset PYTHONPATH PYTHONHOME PYTHONSTARTUP PYTHONUSERBASE PYTHONEXECUTABLE VIRTUAL_ENV
+ORIVRA_DESKTOP_BUNDLE=$here
+export ORIVRA_DESKTOP_BUNDLE
+exec "$here/python/bin/python3.12" -I -m orivra.desktop

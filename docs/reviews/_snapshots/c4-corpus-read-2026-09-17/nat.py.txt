@@ -1,0 +1,43 @@
+import json,re,sys,datetime as dt
+from collections import defaultdict,Counter
+from email.utils import parsedate_to_datetime
+sys.path.insert(0,'harness/src')
+from mailweave_harness.seed.world import PEOPLE
+from mailweave_harness.evaluation import queryfree as qf
+m=json.load(open(sys.argv[1]))
+fam={t['thread_key']:t for t in m['answer_key']['threads']}
+addr2name={p.address:p.display for p in PEOPLE}
+names={p.display for p in PEOPLE}
+D=r"(\d{2} (?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4})"
+def d(s): return dt.datetime.strptime(s,"%d %B %Y").date()
+PAST=[r"That was on "+D, r"I logged it on "+D, r"got sorted back on "+D, D+r" was (?:the )?[A-Z]", r"took place on "+D, r"was held on "+D, r"ran on "+D, r"We had .{3,40} on "+D, r"For the diary: .{3,40} was "+D, D+r" went to signature", r"Signature went on "+D]
+FUT=[r"Diarised for "+D, r"Due back "+D, r"scheduled for dispatch on "+D]
+HEARSAY=[r"I spoke to (?P<w>[A-Z][a-z]+ [A-Z][a-z]+) about this", r"(?P<w>[A-Z][a-z]+ [A-Z][a-z]+) told me ", r"Second hand from (?P<w>[A-Z][a-z]+ [A-Z][a-z]+):", r"(?P<w>[A-Z][a-z]+ [A-Z][a-z]+) said ", r"conversation with (?P<w>[A-Z][a-z]+ [A-Z][a-z]+) says", r"what (?P<w>[A-Z][a-z]+ [A-Z][a-z]+) told me"]
+c=Counter(); ex={}
+scope=sys.argv[2] if len(sys.argv)>2 else 'all'
+for x in m['messages']:
+    t=fam[x['thread_key']]
+    if scope=='scored' and not (t['family'] and t['answer']): continue
+    body=qf._strip(x['body']); sent=parsedate_to_datetime(x['date_rfc2822']).date()
+    c['messages']+=1
+    for p in PAST:
+        for mm in re.finditer(p,body):
+            if d(mm.group(1))>sent: c['past_tense_future_date']+=1; ex.setdefault('past_tense_future_date',(x['thread_key'],x['position'],x['date_rfc2822'][:16],mm.group(0)))
+    for p in FUT:
+        for mm in re.finditer(p,body):
+            if d(mm.group(1))<sent: c['future_tense_past_date']+=1; ex.setdefault('future_tense_past_date:'+p[:8],(x['thread_key'],x['position'],x['date_rfc2822'][:16],mm.group(0),x['role']))
+    for p in HEARSAY:
+        mm=re.search(p,body)
+        if mm and mm.group('w') in names:
+            c['hearsay_shaped']+=1
+            if mm.group('w')==addr2name.get(x['sender']): c['hearsay_about_self']+=1; ex.setdefault('self',(x['thread_key'],x['position'],body[:120]))
+            if x['role']=='filler': c['hearsay_shaped_on_filler']+=1
+            break
+    if x['role'] in ('evidence','confirmation','authored_claim','reversal','attachment_cover') and re.search(r"Will confirm once I have seen it in writing|Do not hold me to that|Happy to be corrected|Shout if that is wrong|Parking it until we hear|Say if you want this raised higher|Working from an old note|I have not checked recently",body):
+        c['answer_message_with_hedging_closer']+=1
+    if x['role'] in ('evidence','confirmation','authored_claim','reversal','attachment_cover'): c['answer_messages']+=1
+    if x['role'] in ('proposal','hearsay','reminder','objection','trap_decoy','paraphrase_decoy','near_duplicate','reinforcement','attachment_wrong_version') and re.search(r"Settled, and this is the version to quote|This supersedes what I said before|Confirming where we landed|Noted, and confirmed|Correcting myself from earlier",body):
+        c['distractor_with_finality_leadin']+=1
+    if x['role'] in ('proposal','hearsay','reminder','objection','trap_decoy','paraphrase_decoy','near_duplicate','reinforcement','attachment_wrong_version'): c['distractor_messages']+=1
+print(dict(c))
+for k,v in ex.items(): print(k,v)

@@ -1,0 +1,70 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+dist/
+build/
+
+# credentials - never commit (SECURITY_NOTES 3.3)
+# The two OAuth client files this project uses by name, plus the patterns that catch a
+# renamed one. `.gitignore` does not protect against `git add -f`, and both files are already
+# in history at 0162e79 / 948bd2a - purging that history is the owner's open decision, and
+# these lines stop the next one arriving.
+mailweave-server-oauth.json
+mailweave-harness-oauth.json
+client_secret*.json
+credentials*.json
+token*.json
+*.credentials.json
+.secrets/
+*.pem
+*.key
+.env
+.env.*
+# a configured desktop-beta bundle carries the beta's OAuth client file, wherever it is written
+# (docs/DESKTOP_BETA.md §6.1); an unconfigured one is a build output
+*.mcpb
+
+# derived mailbox data - never commit
+*.sqlite
+*.db
+chroma/
+index/
+embeddings/
+
+# traces and preflight records from personal-mailbox runs
+traces/personal/
+docs/reviews/ROUND_*/preflight-records/
+
+# evaluation ground truth and run output - never commit (EP §5.2)
+# Case files hold the queries and the expected answers. A case file in this repository is the
+# system under test holding the exam paper, which is the one thing the M2 measurement cannot
+# survive. `.gitignore` does not protect against `git add -f`, so the campaign's copy belongs
+# outside the working tree entirely; these lines stop an accidental one.
+cases-*.json
+cases/
+benchmarks/
+traces-*/
+verification-*.json
+manifest-*.json
+
+# the exported case-authoring kit. A build artifact of `--export-kit`, regenerated on demand,
+# and it travels with a corpus manifest that is itself ignored above.
+handoff/
+
+# Working clutter this repository's own tooling produces. `_to_delete/` is where git lock
+# files and working-tree exports are parked (the bridge cannot unlink, so they are moved
+# rather than removed); `walk.json` is what `docs/GMAIL_PREVIEW_DEMO.md` tells you to
+# redirect the demonstration into. Neither is source, and both showed up in every
+# `git status` until they were named here - which is how a `git add -A` commits a tarball.
+_to_delete/
+walk.json
+
+# Where this session writes diagnostics and archives for the owner to read. Not source, not a
+# record the repository is responsible for, and the last of the three §4.3 named as showing up
+# in every `git status`. Quoted nowhere else because the space in the name is load-bearing:
+# a pattern without the trailing slash would also match a file of that name.
+Claude outputs/

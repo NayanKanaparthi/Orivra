@@ -1,0 +1,43 @@
+# F8 file markers, F7 same-entity decisions, later 'undecided' lines, nearest-length probe. argv[1]=manifest.
+import json,re,sys
+from collections import defaultdict,Counter
+sys.path.insert(0,'harness/src')
+from mailweave_harness.evaluation import queryfree as qf
+from mailweave_harness.seed.world import BY_ENTITY
+m=json.load(open(sys.argv[1])); fam={t['thread_key']:t['family'] for t in m['answer_key']['threads']}
+T=defaultdict(dict)
+for x in m['messages']: T[x['thread_key']][x['position']]=x
+S=lambda x: qf._strip(x['body'])
+v3=Counter(); d=Counter(); tot=0
+for x in m['messages']:
+    for a in x['attachments']:
+        tot+=1
+        if a['filename'].endswith('-v3.csv'): v3[fam[x['thread_key']] or 'filler']+=1
+        if re.search(r',2026-02-0[1-4]$',a['content'],re.M): d[fam[x['thread_key']] or 'filler']+=1
+print('attachments',tot,'| named *-v3.csv, by family',dict(v3),'| rows dated 2026-02-01..04, by family',dict(d))
+FACT=re.compile(r"relocated to|carries contractual liability|is recorded against|is authorised by|stands at|is scheduled for dispatch|is attributable to|restated at|constrained at|went to signature|We signed|adopted",re.I)
+k=n=0
+for t in m['answer_key']['threads']:
+    if t['family']!='F7' or not t['answer']: continue
+    n+=1; e=t['evidence_positions'][0]; ms=T[t['thread_key']]; terms=qf.subject_terms(ms[e]['subject'])
+    k+= any(p!=e and any(s in S(x) for s in terms) and FACT.search(S(x)) for p,x in ms.items())
+print(f'F7: halves whose own conversation holds another settled statement about the same entity: {k}/{n}')
+CH=r"Did we ever land this one\?|Has \w[\w ]* been settled\?|nothing in the thread that reads like a decision|is there an agreed position or not|Nobody seems to know where .* landed|Still looking for the .* decision"
+TOP={'approval':r"Nobody knows who countersigns|We need one named approver|being approved by whoever is nearest|delegation matrix still lists the previous owner",'storage_move':r"split across both|insurance schedule lists .* at an address we have left"}
+c=Counter(); nn=Counter()
+for t in m['answer_key']['threads']:
+    if not t['family'] or not t['answer'] or not t['evidence_positions']: continue
+    _sk=t['scenario_key'].split('::'); topic,ek=_sk[0],_sk[1]; ent=BY_ENTITY[ek]; nn[t['family']]+=1; last=max(t['evidence_positions'])
+    pats=[CH]+([TOP[topic]] if topic in TOP else [])
+    c[t['family']]+= any(p>last and any(re.search(q,S(x)) for q in pats) and (ent.formal in x['body'] or ent.plain in x['body']) for p,x in T[t['thread_key']].items())
+print('later same-entity message saying the matter is undecided:',sum(c.values()),'/',sum(nn.values()),{f:f'{c[f]}/{nn[f]}' for f in sorted(nn,key=lambda z:int(z[1:]))})
+rows=[]
+for t in m['answer_key']['threads']:
+    if not t['family'] or not t['answer'] or not t['evidence_positions']: continue
+    ms=T[t['thread_key']]; nlen=len(ms); parts=len({x['sender'] for x in ms.values()}|{r for x in ms.values() for r in x['recipients']})
+    rows.append((t['family'],nlen,parts,set(t['evidence_positions'])))
+fh=ph=0; base=0
+for i,(f,nl,p,ev) in enumerate(rows):
+    near=min((r for j,r in enumerate(rows) if j!=i),key=lambda r:(abs(r[1]-nl),abs(r[2]-p)))
+    fh+= near[0]==f; ph+= round(min(near[3])/(near[1]-1)*(nl-1)) in ev; base+= len(ev)/nl
+print(f'nearest-length neighbour (leave-one-out): same family {fh}/{len(rows)}; exact evidence position {ph}/{len(rows)} vs {base:.1f} expected at random')

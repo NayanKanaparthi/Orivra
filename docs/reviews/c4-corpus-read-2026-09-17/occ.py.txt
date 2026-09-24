@@ -1,0 +1,17 @@
+import json,re,sys
+m=json.load(open('review/sample-4311/manifest.json'))
+msgs={}
+for x in m['messages']: msgs.setdefault(x['thread_key'],[]).append(x)
+for v in msgs.values(): v.sort(key=lambda x:x['position'])
+def strip(b): return re.sub(r"\n-- \n.*$","",b,flags=re.S)
+def has(x,s):
+    if not s: return False
+    t=strip(x['body'])+' '+' '.join(json.dumps(a) for a in x['attachments'])
+    return re.search(r'(?<![\w.])'+re.escape(s)+r'(?![\w])',t) is not None
+for t in m['answer_key']['threads']:
+    if not t['family'] : continue
+    tk=t['thread_key']; ms=msgs[tk]
+    print(f"== {tk} {t['family']} len={len(ms)} ev={t['evidence_positions']} ans={t['answer']!r} wrong={t['wrong_value']!r} older={t['older_value']!r} roles={ {k:v for k,v in t['roles_at'].items() if k!='filler'} }")
+    for lab,val in (('ANS',t['answer']),('WRONG',t['wrong_value']),('OLDER',t['older_value'])):
+        hits=[(x['position'],x['role']) for x in ms if has(x,val)]
+        print(f"   {lab}: {hits}")

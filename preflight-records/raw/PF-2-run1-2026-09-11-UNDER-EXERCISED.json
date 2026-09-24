@@ -1,0 +1,40 @@
+{
+  "changes_if_it_fails": "AD F PF-2's branch table executes. Headers absent => the reply-chain floor needs format=full (a bytes and latency change at the same 40 u, not a quota one). snippet/internalDate absent => primary fallback is threads.get(format=full) at the same cost, pool text becomes subject + participants + body-head-400, and max_pool_threads drops 25 -> 15 with the reduced bound declared per T-RO1. The client already refuses to invent chronological positions when internalDate is missing, so this failure degrades a thread map rather than corrupting one",
+  "credential": "read",
+  "falsified_when": "any header requested via metadataHeaders is absent from the metadata arm while the full arm shows the message carries it; or the metadata arm returns no snippet or no internalDate for a message the full arm gives both for",
+  "findings": {
+    "headers_absent_from_both_arms": {
+      "cc": 1,
+      "in-reply-to": 1,
+      "references": 1
+    },
+    "headers_dropped_by_metadata": {},
+    "messages_compared": 1,
+    "messages_losing_internal_date_under_metadata": 0,
+    "messages_losing_snippet_under_metadata": 0,
+    "reply_linking_headers_dropped": [],
+    "requested_headers": [
+      "Message-ID",
+      "In-Reply-To",
+      "References",
+      "Subject",
+      "From",
+      "To",
+      "Cc",
+      "Date"
+    ]
+  },
+  "measures": "for one thread fetched twice - format=metadata with metadataHeaders, and format=full - which requested headers the metadata arm returned, out of those the full arm shows the message actually carries; and whether the metadata arm returned a per-message snippet and internalDate",
+  "notes": [
+    "header *names* are recorded and header values are not: a Subject is a subject and a From is an address, and neither belongs in a persisted record (OD-4)."
+  ],
+  "pre_registered_rules": [
+    "the full arm is ground truth for header presence; a header absent from both arms is reported as 'the message has none' and is not counted as a metadata failure"
+  ],
+  "probe": "PF-2-metadata-headers",
+  "quota_budget_units": 80,
+  "recorded_at": "2026-09-11T03:09:24.526316+00:00",
+  "title": "References / In-Reply-To survival under format=metadata",
+  "validates": "AD D.5's thread-map and pool design, which is priced at threads.get(format=metadata) = 40 u and assumes the reply-linking headers, the snippet and internalDate are all present. AD A.2 step 4's temporal ordering rests on internalDate specifically",
+  "verdict": "pass"
+}

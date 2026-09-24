@@ -1,0 +1,25 @@
+# Layout identity across seeds, and a content-free position lookup trained on another seed.
+from mailweave_harness.seed.corpus import generate
+from collections import defaultdict, Counter
+def rows(s,prof):
+    b=generate(master_seed=s,size_profile=prof); T=defaultdict(list)
+    for x in b.messages: T[x.thread_key].append(x)
+    out=[]
+    for t in b.answer_key.threads:
+        if not t.family or not t.answer: continue
+        ms=T[t.thread_key]
+        key=(len(ms),len({x.sender for x in ms}),len({r for x in ms for r in x.recipients}|{x.sender for x in ms}))
+        out.append((t.family,tuple(t.evidence_positions),tuple(sorted((k,tuple(v)) for k,v in t.roles_at.items() if k!='filler')),key))
+    return out
+for prof,train,test in (('sample',101,4311),('sample',202,4311),('gate',777,5309)):
+    tr=rows(train,prof); te=rows(test,prof)
+    same=sum(1 for a,b in zip(tr,te) if a[:3]==b[:3])
+    table=defaultdict(Counter)
+    for f,ev,lay,k in tr:
+        if ev: table[k][min(ev)]+=1
+    hit=n=0
+    for f,ev,lay,k in te:
+        if not ev: continue
+        n+=1; hit+= bool(table[k]) and table[k].most_common(1)[0][0] in ev
+    print(f'{prof} seed {train} vs {test}: identical (family, evidence positions, full role layout) {same}/{len(te)}; '
+          f'content-free (length,senders,participants) lookup from seed {train} puts the answer position exactly in {hit}/{n}')

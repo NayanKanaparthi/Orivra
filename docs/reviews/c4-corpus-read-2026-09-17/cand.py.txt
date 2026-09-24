@@ -1,0 +1,22 @@
+import json,re,sys
+sys.path.insert(0,'harness/src')
+from mailweave_harness.evaluation import queryfree as qf
+m=json.load(open('review/sample-4311/manifest.json'))
+msgs={}
+for x in m['messages']: msgs.setdefault(x['thread_key'],[]).append(x)
+for v in msgs.values(): v.sort(key=lambda x:x['position'])
+tot=0;cand=0
+for t in m['answer_key']['threads']:
+    if not t['family'] or not t['answer']: continue
+    ms=msgs[t['thread_key']]
+    terms=qf.subject_terms(ms[0]['subject'])
+    ev=t['evidence_positions']
+    status=[]
+    for p in ev:
+        x=ms[p]; c=qf.Candidate(x['rfc822_message_id'],p,x['subject'],x['body'],0)
+        s=qf.score(c,terms)
+        status.append((p,s))
+    ok=any(s is not None for p,s in status)
+    tot+=1; cand+=ok
+    print(t['thread_key'],t['family'],'terms=',terms,'evidence candidate scores',status, 'ELIGIBLE' if ok else 'UNWINNABLE')
+print(cand,'of',tot,'threads have an evidence message qf-1 can even consider')

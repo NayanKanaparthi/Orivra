@@ -1,0 +1,136 @@
+{
+  "bundle": "/home/claude/mwtest/dist-desktop/orivra-beta-0.2.0-beta.1-linux-x86_64-unconfigured.mcpb",
+  "account": {
+    "user": "orivra-cleanroom",
+    "home": "/home/orivra-cleanroom",
+    "home_before": [
+      "0o644 .bash_logout",
+      "0o644 .bashrc",
+      "0o644 .profile"
+    ],
+    "can_read": {
+      "/home/claude/mwtest/treeR1": "no",
+      "/home/claude/mwtest/treeR1/.venv": "no",
+      "/home/claude/mwtest/venvR1": "no",
+      "/home/claude": "no",
+      "/root": "no",
+      "/root/.cache": "no"
+    },
+    "python_on_path": "/usr/bin/python3"
+  },
+  "unpack": [
+    "Extension unpacked successfully to /home/orivra-cleanroom/extension"
+  ],
+  "import_probe": [
+    "/home/orivra-cleanroom/extension/server/python/bin/python3.12",
+    "['/home/orivra-cleanroom/extension/server/python/lib/python312.zip', '/home/orivra-cleanroom/extension/server/python/lib/python3.12', '/home/orivra-cleanroom/extension/server/python/lib/python3.12/lib-dynload', '/home/orivra-cleanroom/extension/server/python/lib/python3.12/site-packages']",
+    "/home/orivra-cleanroom/extension/server/python/lib/python3.12/site-packages/mailweave/__init__.py",
+    "/home/orivra-cleanroom/extension/server/python/lib/python3.12/site-packages/orivra/__init__.py"
+  ],
+  "server": {
+    "name": "orivra-beta",
+    "version": "0.2.0b1",
+    "protocol": "2025-11-25"
+  },
+  "tools": [
+    "mailweave_search",
+    "mailweave_thread_map",
+    "mailweave_get_messages",
+    "mailweave_get_attachment",
+    "orivra_ask",
+    "orivra_sources",
+    "orivra_expand",
+    "orivra_graph",
+    "orivra_setup"
+  ],
+  "product_tool_before_setup": {
+    "is_error": true,
+    "text": "Orivra (beta) is not set up on this Mac yet: Gmail is not connected and the models are not installed. Call the orivra_setup tool; it reports what is left and does the next step."
+  },
+  "setup_first_call": "Orivra setup - not finished yet.\n\nOrivra answers with two local models that run on this Mac (minishlab/potion-retrieval-32M, BAAI/bge-reranker-base), 1.18 GB together. They are downloaded once from Hugging Face and checked byte for byte against the digests this release was built with. Nothing about your mail is sent to the model host; this download is the only time Orivra contacts it.\nModels: the download failed - setup-models: ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1010). orivra_setup tries again on its next call; if it keeps failing, check this Mac's internet connection.\n\nTo connect Gmail, open this link in a browser on this Mac and sign in with the Google account whose mail Orivra should read:\n\nhttps://accounts.google.com/o/oauth2/v2/auth?client_id=cleanroom-placeholder.apps.googleusercontent.com&redirect_uri=http%3A%2F%2F127.0.0.1%3A34133%2F&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&code_challenge=65bBoA_NfCtHMl1Soj6E6KBG8IWnT4uVKQXIMbk3W7g&code_challenge_method=S256&state=9MMW_tZcMtmqXx6a7FoOPZIm-h2OeBEP0_3JfSp97bc&access_type=offline&prompt=consent\n\nWhat you will see:\n1. A warning that Google hasn't verified this app. This beta connects through a test OAuth application that has not been through Google's verification, which Google requires before an app with this permission is offered to the public. Only Google accounts the beta's organiser has added as test users can continue; Google refuses any other account. The screen's wording is Google's; it offers either Continue, or Advanced followed by a link to go to the app.\n2. Google's permission screen, asking for one permission: to read your email messages and settings. Orivra cannot send, delete, label or change anything (https://www.googleapis.com/auth/gmail.readonly).\n3. A page saying \"Consent received\". Close it and come back here.\n\nThe link works for 5 minutes, and only in a browser on this Mac: Google hands its answer to a one-time listener on this computer (127.0.0.1).\n\nTest authorizations expire 7 days after you consent. That is Google's rule for apps in testing, not an Orivra setting; when it happens, orivra_setup gives you a new link.\n\nThe authorization Google returns (a refresh token) is stored only on this Mac, in /home/orivra-cleanroom/.local/share/orivra-beta/state/credentials.json, readable only by your macOS account. It is never sent to the beta's organiser or to anyone else.\n\nWhen you have consented, ask me to continue the Orivra setup.\n\nCall orivra_setup again to see progress; it finishes setup by itself once Gmail is connected and the models are in place.",
+  "authorization_url": {
+    "host": "accounts.google.com",
+    "path": "/o/oauth2/v2/auth",
+    "client_id": [
+      "cleanroom-placeholder.apps.googleusercontent.com"
+    ],
+    "scope": [
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ],
+    "redirect_uri": [
+      "http://127.0.0.1:34133/"
+    ],
+    "code_challenge_method": [
+      "S256"
+    ],
+    "access_type": [
+      "offline"
+    ],
+    "prompt": [
+      "consent"
+    ]
+  },
+  "process": {
+    "python_processes": [
+      {
+        "pid": 3232,
+        "exe": "/home/orivra-cleanroom/extension/server/python/bin/python3.12",
+        "argv": [
+          "/home/orivra-cleanroom/extension/server/python/bin/python3.12",
+          "-I",
+          "-m",
+          "orivra.desktop"
+        ],
+        "mapped_files": 14,
+        "mapped_outside_home_and_system": [],
+        "environment_variables": [
+          "HOME",
+          "LANG",
+          "ORIVRA_DESKTOP_BUNDLE",
+          "PATH",
+          "PWD"
+        ]
+      },
+      {
+        "pid": 3244,
+        "exe": "/home/orivra-cleanroom/extension/server/python/bin/python3.12",
+        "argv": [
+          "/home/orivra-cleanroom/extension/server/python/bin/python3.12",
+          "-I",
+          "-m",
+          "mailweave.cli",
+          "auth",
+          "login",
+          "--events",
+          "--client"
+        ],
+        "mapped_files": 12,
+        "mapped_outside_home_and_system": [],
+        "environment_variables": [
+          "HF_DATASETS_OFFLINE",
+          "HF_HUB_DISABLE_TELEMETRY",
+          "HF_HUB_OFFLINE",
+          "HOME",
+          "LANG",
+          "ORIVRA_DESKTOP_BUNDLE",
+          "PATH",
+          "PWD",
+          "TRANSFORMERS_OFFLINE"
+        ]
+      }
+    ]
+  },
+  "loopback_answer_status": 200,
+  "setup_second_call": "Orivra setup - not finished yet.\n\nGmail: the last attempt did not finish - auth login: the loopback redirect was refused: authorization failed: access_denied\nModels: the last download failed (setup-models: ConnectError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate in certificate chain (_ssl.c:1010)); started again.\nModels: downloading, 0% (0 MB of 1.18 GB).\n\nTo connect Gmail, open this link in a browser on this Mac and sign in with the Google account whose mail Orivra should read:\n\nhttps://accounts.google.com/o/oauth2/v2/auth?client_id=cleanroom-placeholder.apps.googleusercontent.com&redirect_uri=http%3A%2F%2F127.0.0.1%3A44245%2F&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&code_challenge=Jc7VT44vDEevBS3vDthPPp9US8_F78bJaTcFi81PpGM&code_challenge_method=S256&state=-FsBAyzrfz6qx5cuF9gecx8KzB32oAWOn0JRZYDBeOY&access_type=offline&prompt=consent\n\nWhat you will see:\n1. A warning that Google hasn't verified this app. This beta connects through a test OAuth application that has not been through Google's verification, which Google requires before an app with this permission is offered to the public. Only Google accounts the beta's organiser has added as test users can continue; Google refuses any other account. The screen's wording is Google's; it offers either Continue, or Advanced followed by a link to go to the app.\n2. Google's permission screen, asking for one permission: to read your email messages and settings. Orivra cannot send, delete, label or change anything (https://www.googleapis.com/auth/gmail.readonly).\n3. A page saying \"Consent received\". Close it and come back here.\n\nThe link works for 5 minutes, and only in a browser on this Mac: Google hands its answer to a one-time listener on this computer (127.0.0.1).\n\nTest authorizations expire 7 days after you consent. That is Google's rule for apps in testing, not an Orivra setting; when it happens, orivra_setup gives you a new link.\n\nThe authorization Google returns (a refresh token) is stored only on this Mac, in /home/orivra-cleanroom/.local/share/orivra-beta/state/credentials.json, readable only by your macOS account. It is never sent to the beta's organiser or to anyone else.\n\nWhen you have consented, ask me to continue the Orivra setup.\n\nCall orivra_setup again to see progress; it finishes setup by itself once Gmail is connected and the models are in place.",
+  "home_after": [
+    "0o644 .bash_logout",
+    "0o644 .bashrc",
+    "0o775 .local/",
+    "0o775 .local/share/",
+    "0o775 .local/share/orivra-beta/",
+    "0o775 .local/share/orivra-beta/models/",
+    "0o775 .local/share/orivra-beta/models/stage_a_default.python-st/",
+    "0o775 .local/share/orivra-beta/models/stage_a_default.python-st/6fc8051fab2a1e0ee76689cf08c853792ac285e7/",
+    "0o644 .profile"
+  ]
+}

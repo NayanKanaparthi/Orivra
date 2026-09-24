@@ -1,0 +1,24 @@
+import json,sys
+from collections import defaultdict,Counter
+m=json.load(open(sys.argv[1]))
+msgs=defaultdict(dict); byid={}
+for x in m['messages']: msgs[x['thread_key']][x['position']]=x; byid[x['rfc822_message_id']]=x
+out=defaultdict(list)
+for t in m['answer_key']['threads']:
+    f=t['family']
+    if f not in ('F4','F11','F12','F3') or not t['answer']: continue
+    dec=[p for r in ('trap_decoy','paraphrase_decoy') for p in t['roles_at'].get(r,[])]
+    lex = t['roles_at'].get('trap_decoy',[]) if f in('F4','F11','F3') else t['roles_at'].get('paraphrase_decoy',[])
+    ev=t['evidence_positions'][0]
+    for d in lex:
+        e=msgs[t['thread_key']][ev]
+        par=byid.get(e['in_reply_to']) if e['in_reply_to'] else None
+        anc=set(); cur=e
+        while cur and cur['in_reply_to'] in byid:
+            cur=byid[cur['in_reply_to']]; anc.add(cur['position'])
+        dd=msgs[t['thread_key']][d]
+        child = dd['rfc822_message_id']==e['in_reply_to']
+        out[f].append((abs(ev-d), child, d in anc, ev-d))
+for f,v in sorted(out.items()):
+    n=len(v)
+    print(f,'n',n,'|dist|<=2:',sum(1 for a in v if a[0]<=2),'|dist|<=1:',sum(1 for a in v if a[0]<=1),'evidence replies directly to decoy:',sum(a[1] for a in v),'decoy in evidence ancestry:',sum(a[2] for a in v),'dist hist',Counter(min(a[0],6) for a in v))

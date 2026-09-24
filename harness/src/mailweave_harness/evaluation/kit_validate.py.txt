@@ -1,0 +1,84 @@
+"""Check a case file before it is handed back.
+
+Needs Python 3.12 or newer and pydantic, and nothing else.
+
+    python validate.py cases-1042.json manifest-gate-1042.json
+
+Exit 0 means every case loaded and every ref resolved against the corpus. Exit 2 means at least
+one refusal, each printed with the case id and what was wrong. **These are the same refusals the
+scoring run applies** - the two schema modules here are the repository's own files, copied at
+export time and stamped in VERSION.txt - so a file that passes here does not get rejected later
+for a reason you could have seen now.
+
+What this cannot check, and nobody can check for you: whether the query is answerable only from
+the evidence you named, and whether the expected answer is right.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from kit_schema.cases import FAMILY_LABELS, CaseFile, check_against  # noqa: E402
+from kit_schema.manifest import Manifest  # noqa: E402
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 2:
+        print(__doc__)
+        return 1
+    cases_path, manifest_path = Path(argv[0]), Path(argv[1])
+    try:
+        case_file = CaseFile.model_validate_json(cases_path.read_text(encoding="utf-8"))
+    except Exception as failure:
+        print(f"REFUSED  {cases_path}")
+        print(f"  {type(failure).__name__}: {failure}")
+        return 2
+    manifest = Manifest.model_validate(json.loads(manifest_path.read_text(encoding="utf-8")))
+    print(f"ok  {cases_path}: {len(case_file.cases)} case(s), schema {case_file.schema_version}")
+    if manifest.generator_version != case_file.generator_version or (
+        manifest.master_seed != case_file.master_seed
+    ):
+        print(
+            f"REFUSED  the case file says generator {case_file.generator_version}/seed "
+            f"{case_file.master_seed}; this manifest is {manifest.generator_version}/seed "
+            f"{manifest.master_seed}. One of them is the wrong file."
+        )
+        return 2
+    problems = 0
+    for family, cases in case_file.by_family.items():
+        registered = REGISTERED.get(family)
+        short = "" if registered is None else f"  (plan registers {registered})"
+        print(f"    {FAMILY_LABELS[family]:>4}  {family:<30} {len(cases):>4} case(s){short}")
+    for case in case_file.cases:
+        try:
+            check_against(case, manifest=manifest)
+        except Exception as failure:
+            problems += 1
+            # `RefUnresolvable` already names the case, so the id is not printed twice.
+            print(f"    REFUSED  {failure}")
+    print(f"\
+    ref joins against the corpus: {problems} refusal(s)")
+    if problems:
+        return 2
+    missing = {
+        family: REGISTERED[family] - len(case_file.by_family.get(family, ()))
+        for family in REGISTERED
+        if len(case_file.by_family.get(family, ())) < REGISTERED[family]
+    }
+    if missing:
+        print("\
+    short of the registered counts (not a refusal; the run reports")
+        print("    NOT_EVALUABLE for a clause below its registered n):")
+        for family, short_by in sorted(missing.items()):
+            print(f"      {family:<30} {short_by} more")
+    return 0
+
+
+REGISTERED = __REGISTERED__
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

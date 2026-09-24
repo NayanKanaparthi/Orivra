@@ -1,0 +1,126 @@
+DRY RUN - dummy cases, sentinel-token queries, no mailbox. No number here is
+evidence about retrieval; what it establishes is that the command path executes.
+
+  arm full                   isolates: nothing; this is the shipped default and the reference every other arm is read against
+  arm sem-off                isolates: the semantic rungs: stage-A embedding retrieval (L5) and the stage-B cross-encoder (L6's
+  arm no-rerank              isolates: D.7's second tier, the cross-encoder, and nothing else: stage-A embedding runs on both s
+  arm fixed-window           isolates: the disclosure selector: A.9(3)'s query-aware E4 fill against Baseline F's fixed +/-2 wi
+  arm sem-off+fixed-window   isolates: **nothing on its own** - two factors differ from `full` at once. It is the closest confi
+  arm primitive-floor-tight  MAX_BODY_FETCHES_L0 = 5: what MailWeave's cheapest rung may fetch
+  arm primitive-floor-generous MAX_RERANK_PAIRS = 25: the widest candidate set MailWeave ever scores
+
+full vs sem-off
+  the comparison isolates: the semantic rungs: stage-A embedding retrieval (L5) and the stage-B cross-encoder (L6's second tier). Everything else is held identical to `full`
+
+  NO CHANGE
+      F1 exact_lookup                 first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+     F16 ranking_stress               first response 1.000 vs 1.000 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+     F11 semantic_lexical_trap        first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+      F4 semantic_paraphrase          first response 0.667 vs 0.667 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+
+  STILL FAILING on full (0 entr(y/ies))
+    none: every required message reached the reader on every case
+
+  A difference inside overlapping Wilson intervals is reported as no change. One corpus at one seed cannot call a small gap a win.
+
+full vs fixed-window
+  the comparison isolates: the disclosure selector: A.9(3)'s query-aware E4 fill against Baseline F's fixed +/-2 window (DISC-02, EP §8.8), at the same ceiling and measured by the same estimate
+
+  NO CHANGE
+      F1 exact_lookup                 first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+     F16 ranking_stress               first response 1.000 vs 1.000 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+     F11 semantic_lexical_trap        first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+      F4 semantic_paraphrase          first response 0.667 vs 0.667 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+
+  STILL FAILING on full (0 entr(y/ies))
+    none: every required message reached the reader on every case
+
+  A difference inside overlapping Wilson intervals is reported as no change. One corpus at one seed cannot call a small gap a win.
+
+full vs primitive-floor-tight
+  the comparison isolates: MailWeave against a fixed primitive-tools policy
+
+  NO CHANGE
+      F1 exact_lookup                 first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+     F16 ranking_stress               first response 1.000 vs 1.000 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+     F11 semantic_lexical_trap        first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+      F4 semantic_paraphrase          first response 0.667 vs 0.667 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 0.667
+
+  STILL FAILING on full (0 entr(y/ies))
+    none: every required message reached the reader on every case
+
+  A difference inside overlapping Wilson intervals is reported as no change. One corpus at one seed cannot call a small gap a win.
+
+full vs primitive-floor-generous
+  the comparison isolates: the same floor at the wider budget
+
+  NO CHANGE
+      F1 exact_lookup                 first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+     F16 ranking_stress               first response 1.000 vs 1.000 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 1.000
+     F11 semantic_lexical_trap        first response 1.000 vs 1.000 (delta +0.000, n=2)
+                                           after expansion 1.000 vs 1.000
+      F4 semantic_paraphrase          first response 0.667 vs 0.667 (delta +0.000, n=3)
+                                           after expansion 1.000 vs 0.667
+
+  STILL FAILING on full (0 entr(y/ies))
+    none: every required message reached the reader on every case
+
+  A difference inside overlapping Wilson intervals is reported as no change. One corpus at one seed cannot call a small gap a win.
+
+RECOVERABILITY - what expansion added over the first response
+  {"arm": "full", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 1, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 0, "mean_levels_traversed": 1.09, "failed_runs": 0}
+  {"arm": "sem-off", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 1, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 0, "mean_levels_traversed": 1.09, "failed_runs": 0}
+  {"arm": "no-rerank", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 1, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 0, "mean_levels_traversed": 1.09, "failed_runs": 0}
+  {"arm": "fixed-window", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 1, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 0, "mean_levels_traversed": 1.09, "failed_runs": 0}
+  {"arm": "sem-off+fixed-window", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 1, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 0, "mean_levels_traversed": 1.09, "failed_runs": 0}
+  {"arm": "primitive-floor-tight", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 0, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 1, "mean_levels_traversed": 2.0, "failed_runs": 0}
+  {"arm": "primitive-floor-generous", "cases": 11, "evidence_in_first_response": 9, "evidence_gained_by_expansion": 0, "surfaced_never_carried_after_expansion": 0, "never_named_at_all": 1, "mean_levels_traversed": 2.0, "failed_runs": 0}
+
+[H1] NOT_EVALUABLE
+      Semantic escalation recovers at least one class of evidence lexical retrieval misses, at zero cost on exact-lookup families
+   not_evaluable  F4-recall-rises
+                  falsified if: F4/F11 recall does not rise over the lexical arm
+                  F4 first-response recall: candidate 0.667 mean / 0.667 strict over 3 case(s) [CI 0.208-0.939] vs baseline 0.667 mean / 0.667 strict over 3 case(s) [CI 0.208-0.939]. EP §4.3/§4.7 register 12 F4 cases per seed and this run had 3; a hypothesis answered by fewer cases than the plan asked for is answered by a corpus nobody registered
+   not_evaluable  F11-recall-rises
+                  falsified if: F4/F11 recall does not rise over the lexical arm
+                  F11 first-response recall: candidate 1.000 mean / 1.000 strict over 2 case(s) [CI 0.342-1.000] vs baseline 1.000 mean / 1.000 strict over 2 case(s) [CI 0.342-1.000]. EP §4.3/§4.7 register 10 F11 cases per seed and this run had 2; a hypothesis answered by fewer cases than the plan asked for is answered by a corpus nobody registered
+           holds  no-embedding-on-F1-F2
+                  falsified if: embedding calls appear on F1/F2 traces
+                  0 embed/rerank call(s) counted at the seam across F1 and F2
+[H2] NOT_EVALUABLE
+      Bounded reranking improves top-of-list precision on ambiguous families without changing exact-match families
+   not_evaluable  F16-cut-loss-falls
+                  falsified if: F16 cut_loss does not fall
+                  F16 cut_loss: candidate 0.000 vs baseline 0.000. EP §4.3 registers 8 F16 cases per seed and this run measured a pool on 3; a reranker justified or refused on fewer cases than the plan asked for is justified or refused by a corpus nobody registered
+           holds  F1-ordering-unchanged
+                  falsified if: F1 ordering changes
+                  0 of 2 F1 cases ordered differently: []
+   not_evaluable  F12-does-not-regress
+                  falsified if: F12 (semantic negative control) regresses
+                  no F12 case ran on both arms
+[H3] NOT_EVALUABLE
+      Query-aware disclosure selects the answering message more often than position-based selection, without dropping the reply-chain floor
+   not_evaluable  F3-flatness-improves
+                  falsified if: F3 position-flatness does not improve
+                  fewer than two sweep positions ran on both arms; a spread over one position is zero for every system including an oldest-K one
+   not_evaluable  F17-reversal-holds
+                  falsified if: F17 reversal recall drops in the query-aware arm
+                  no F17 cases ran on the candidate arm, so the comparison has one side
+
+These are measurements, not a gate. A falsified hypothesis removes its machinery from the default path rather than being argued with; one that holds is a citation a gating reviewer re-runs.
+
+Nothing above is evidence about retrieval. Six dummy cases cannot reach any registered n, which is why every hypothesis reports NOT_EVALUABLE rather than a verdict, and that is the correct output for this corpus.

@@ -1,0 +1,30 @@
+import json,re,sys
+from collections import defaultdict,Counter
+sys.path.insert(0,'harness/src')
+from mailweave_harness.seed.world import ENTITIES
+from mailweave_harness.evaluation import queryfree as qf
+m=json.load(open(sys.argv[1]))
+msgs=defaultdict(list)
+for x in m['messages']: msgs[x['thread_key']].append(x)
+for v in msgs.values(): v.sort(key=lambda x:x['position'])
+ent={e.key:e for e in ENTITIES}
+def sent_with(text,val):
+    for s in re.split(r'(?<=[.!?])\s+',text):
+        if val and re.search(r'(?<![\w.])'+re.escape(val)+r'(?!\w)',s): return s
+    return None
+tab=defaultdict(Counter); ex={}
+for t in m['answer_key']['threads']:
+    if t['family'] not in ('F3','F4','F11','F12') or not t['answer']: continue
+    e=ent[t['scenario_key'].split('::')[1]]
+    ms=msgs[t['thread_key']]
+    for role,ps in t['roles_at'].items():
+        if role=='filler': continue
+        for p in ps:
+            text=qf._strip(ms[p]['body'])
+            val=t['answer'] if p in t['evidence_positions'] else t['wrong_value']
+            s=sent_with(text,val)
+            if s is None: tab[(t['family'],role)]['no_value_sentence']+=1; continue
+            k='formal' if e.formal in s else ('plain' if e.plain.lower() in s.lower() else 'neither')
+            tab[(t['family'],role)][k]+=1; ex.setdefault((t['family'],role,k),s)
+for k in sorted(tab): print(k,dict(tab[k]))
+for k,v in sorted(ex.items()): print(k,'::',v)

@@ -1,0 +1,113 @@
+{
+  "schema": 2,
+  "comment": [
+    "Declared intent: which model artifacts MailWeave's semantic rung may use, from which",
+    "host, under which licence, and how large each set is allowed to be. Reviewed by a human.",
+    "",
+    "An entry has one or more ARTIFACT SETS rather than a file list, because a repo ships",
+    "the same weights in several formats and a runtime needs exactly one of them.",
+    "BAAI/bge-reranker-base carries model.safetensors AND pytorch_model.bin AND",
+    "onnx/model.onnx: downloading the repo is about 3.36 GB for roughly 1.1 GB of weights",
+    "anyone uses. A set names the format its runtime loads, so the Python arm and PF-4b's",
+    "ONNX arm are locked separately and stay separately identifiable.",
+    "",
+    "Patterns are fnmatch over the repo-relative path. Every `required` pattern must match at",
+    "least one file at pin time or the pin fails: a pattern that silently matches nothing is",
+    "how a tokenizer goes missing and the failure surfaces later as a model-quality result.",
+    "",
+    "This file pins nothing. Revisions and digests arrive from a real download via",
+    "`mailweave setup-models --pin` and land in models.lock, which is then reviewed."
+  ],
+  "host": "huggingface.co",
+  "models": {
+    "stage_a_default": {
+      "role": "bi-encoder",
+      "repo_id": "minishlab/potion-retrieval-32M",
+      "expected_license": "MIT",
+      "why": "AD D.5's default stage A: 32.3M params, MIT, ungated. Chosen over EmbeddingGemma because that one is HF-gated, which is friction against NFR-04's clean-machine setup.",
+      "artifact_sets": {
+        "python-st": {
+          "runtime": "sentence-transformers",
+          "max_total_bytes": 268435456,
+          "required": ["config.json", "*.safetensors", "modules.json"],
+          "optional": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+            "vocab.txt",
+            "config_sentence_transformers.json",
+            "sentence_bert_config.json",
+            "*_StaticEmbedding/*",
+            "*_Normalize/*",
+            "*_Pooling/*"
+          ],
+          "exclude": ["*.bin", "*.h5", "*.msgpack", "*.ot", "onnx/*", "openvino/*"],
+          "why": "modules.json is REQUIRED, not optional: at revision 6fc8051 it declares sentence_transformers.models.StaticEmbedding and Normalize, and without it SentenceTransformer falls back to a transformer-style load this repo cannot satisfy. A missing modules.json would present as a loader failure and get read as a model problem."
+        }
+      }
+    },
+    "stage_b_default": {
+      "role": "cross-encoder",
+      "repo_id": "BAAI/bge-reranker-base",
+      "expected_license": "MIT",
+      "why": "AD D.5's default stage B, scored over the shortlist only: cross-encoders have no reusable per-document work, so their cost is linear in pool size and affordable only over max_rerank_pairs candidates.",
+      "artifact_sets": {
+        "python-st": {
+          "runtime": "sentence-transformers",
+          "max_total_bytes": 1288490188,
+          "required": ["config.json", "*.safetensors"],
+          "optional": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+            "sentencepiece.bpe.model",
+            "vocab.txt"
+          ],
+          "exclude": ["*.bin", "*.h5", "*.msgpack", "*.ot", "onnx/*", "openvino/*"],
+          "why": "the CrossEncoder path: safetensors weights plus the tokenizer and config it loads. pytorch_model.bin and onnx/model.onnx are the same weights twice over and are excluded rather than downloaded and ignored."
+        },
+        "node-onnx": {
+          "runtime": "node-transformers-js",
+          "max_total_bytes": 1288490188,
+          "required": ["config.json", "onnx/*.onnx"],
+          "optional": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+            "sentencepiece.bpe.model",
+            "onnx/*.onnx_data"
+          ],
+          "exclude": ["*.safetensors", "*.bin", "*.h5", "*.msgpack", "*.ot", "openvino/*"],
+          "why": "PF-4b's arm. Locked separately so the Node measurement is known to be against ONNX artifacts and the Python measurement against safetensors, rather than both citing 'bge-reranker-base' and differing for a reason nobody recorded."
+        }
+      }
+    },
+    "stage_a_swap": {
+      "role": "bi-encoder",
+      "repo_id": "Qwen/Qwen3-Embedding-0.6B",
+      "expected_license": "Apache-2.0",
+      "why": "AD D.5's opt-in swap, behind the same SEM-03 interface. Present so that 'a second implementation registers without touching retrieval logic' is a claim something can exercise. Not pinned by default: it is the alternate, not the default.",
+      "artifact_sets": {
+        "python-st": {
+          "runtime": "sentence-transformers",
+          "max_total_bytes": 2684354560,
+          "required": ["config.json", "*.safetensors"],
+          "optional": [
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "special_tokens_map.json",
+            "vocab.json",
+            "merges.txt",
+            "modules.json",
+            "config_sentence_transformers.json",
+            "sentence_bert_config.json",
+            "*_Pooling/*",
+            "*_Normalize/*"
+          ],
+          "exclude": ["*.bin", "*.h5", "*.msgpack", "*.ot", "onnx/*", "openvino/*", "*.gguf"],
+          "why": "same shape as the default's set; the gguf variants are a different runtime entirely and are excluded rather than pulled."
+        }
+      }
+    }
+  }
+}

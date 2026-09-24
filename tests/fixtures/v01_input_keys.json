@@ -1,0 +1,50 @@
+{
+  "_": "Generated from the v0.1 tag by tools/dev/v01_input_keys.py. Do not hand-edit: it is a cache of the tag, and tests/test_v01_input_compatibility.py checks it against the tag wherever .git is present.",
+  "commit": "d15158dfa883a6b0ac88b6fcea700e883bbd666d",
+  "published_argument_keys": {
+    "GET_ATTACHMENT": [
+      "message_id",
+      "mode",
+      "part_id"
+    ],
+    "GET_MESSAGES": [
+      "message_ids",
+      "positions",
+      "view"
+    ],
+    "SEARCH": [
+      "budget",
+      "budget.max_api_calls",
+      "budget.max_disclosed_tokens",
+      "budget.max_hit_threads",
+      "budget.max_http_requests",
+      "budget.max_ms",
+      "budget.max_quota_units",
+      "budget.max_semantic_ms",
+      "budget.max_server_ms",
+      "constraints",
+      "constraints.after",
+      "constraints.before",
+      "constraints.from",
+      "constraints.has_attachment",
+      "constraints.label",
+      "constraints.to",
+      "force_rungs",
+      "pool",
+      "pool.max_threads",
+      "pool.scope",
+      "pool.window",
+      "query",
+      "relax",
+      "scan",
+      "scan.max_pages",
+      "structural",
+      "view"
+    ],
+    "THREAD_MAP": [
+      "segment",
+      "thread_id"
+    ]
+  },
+  "tag": "v0.1"
+}

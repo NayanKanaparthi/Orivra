@@ -1,0 +1,21 @@
+import json,re,sys
+m=json.load(open('review/sample-4311/manifest.json'))
+msgs={}
+for x in m['messages']: msgs.setdefault(x['thread_key'],[]).append(x)
+idpos={}
+for tk,v in msgs.items():
+    v.sort(key=lambda x:x['position'])
+    for x in v: idpos[x['rfc822_message_id']]=f"{tk}:{x['position']}"
+def strip(b): return re.sub(r"\n-- \n.*$","",b,flags=re.S).strip()
+full='-f' in sys.argv
+for tk in [a for a in sys.argv[1:] if not a.startswith('-')]:
+    t=next((t for t in m['answer_key']['threads'] if t['thread_key']==tk),None)
+    print(f"##### {tk} {t['family']} subj={t['subject']!r} ans={t['answer']!r} ev={t['evidence_positions']} wrong={t['wrong_value']!r} older={t['older_value']!r} facts={t['facts']} parts={t['participants']}")
+    for x in msgs[tk]:
+        rp=idpos.get(x['in_reply_to'],x['in_reply_to'])
+        refs=[idpos.get(r,r) for r in x['references']]
+        att=';'.join(a.get('filename','?') for a in x['attachments'])
+        subj='' if x['subject']==t['subject'] else f" SUBJ={x['subject']!r}"
+        print(f"[{x['position']:>2}] {x['role'][:14]:<14} {x['date_rfc2822'][5:22]} {x['sender'].split('@')[0]:<14} ->{len(x['recipients'])} re={rp} nrefs={len(refs)}{subj}{' ATT='+att if att else ''}")
+        print("     "+strip(x['body']).replace('\n','\n     '))
+        if full and x['attachments']: print('     ATTDATA', json.dumps(x['attachments'])[:600])

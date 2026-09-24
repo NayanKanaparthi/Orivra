@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+env:
+  # No credentials, no provider keys: NFR-01's key-free configuration is the default gate
+  # configuration, not a variant.
+  MAILWEAVE_CI: "1"
+
+jobs:
+  quality:
+    name: lint · types · offline tests · gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Bootstrap from the lockfile alone (NFR-04)
+        run: uv sync --all-packages --extra dev --frozen
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Format check
+        run: uv run ruff format --check .
+
+      - name: Types
+        run: uv run mypy
+
+      - name: Offline test suite
+        # The suite denies socket access by default (tests/conftest.py); a test that needs
+        # a socket must carry @pytest.mark.network, which this job deselects.
+        run: uv run pytest -q -m "not network"
+
+      - name: Source guards
+        # ground-truth isolation, import direction, scope literals, Gmail endpoint
+        # literals, generative-client imports, unaudited disk writes, and HTTP clients
+        # built outside the egress allowlist (R-ARCH-006).
+        run: uv run python -m tools.guards
+
+      - name: Gate integrity
+        # Fails if any rubric criterion is marked PASS without a reviewer transition
+        # recording round, reviewer ID and reproduction evidence (AGENT_LOOP §1, §6).
+        run: uv run python tools/rubric_status.py --check
+
+  release-gate:
+    name: release gate (advisory until the gate round)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # PROC-01: NOT TESTED blocks release exactly like FAIL. Until the release round this
+    # job reports rather than blocks - it is expected to fail while criteria are untested,
+    # and `continue-on-error` is removed at the gate.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --all-packages --extra dev --frozen
+      - name: Every mandatory criterion must be PASS
+        run: uv run python tools/rubric_status.py --gate

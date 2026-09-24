@@ -1,0 +1,61 @@
+{
+  "changes_if_it_fails": "max_server_ms is re-derived from this measurement rather than asserted. The registered candidate is max_http_requests x the slowest p90, rounded up to the hundred; it is an upper-bound formula and not the default by itself - the proposed default is validated on neutral end-to-end searches before adoption, and the constant then carries the figures and the date of this run (AD A.11)",
+  "credential": "read",
+  "falsified_when": "max_http_requests multiplied by the slowest endpoint's p90 exceeds max_server_ms - the published deadline cannot spend the published request cap on this network",
+  "findings": {
+    "candidate_deadline_ms": 12300,
+    "candidate_is_a_bound_not_a_default": true,
+    "endpoints": {
+      "users.getProfile": {
+        "cold_first_ms": 336,
+        "count": 10,
+        "max_ms": 537,
+        "p50_ms": 344,
+        "p90_ms": 385,
+        "stopped_early": false
+      },
+      "users.messages.get": {
+        "cold_first_ms": 350,
+        "count": 10,
+        "max_ms": 431,
+        "p50_ms": 340,
+        "p90_ms": 427,
+        "stopped_early": false
+      },
+      "users.messages.list": {
+        "cold_first_ms": 511,
+        "count": 10,
+        "max_ms": 673,
+        "p50_ms": 353,
+        "p90_ms": 511,
+        "stopped_early": false
+      },
+      "users.threads.get": {
+        "cold_first_ms": 467,
+        "count": 10,
+        "max_ms": 513,
+        "p50_ms": 409,
+        "p90_ms": 467,
+        "stopped_early": false
+      }
+    },
+    "ms_per_request_the_published_pair_assumes": 83,
+    "published_max_http_requests": 24,
+    "published_max_server_ms": 2000,
+    "samples_per_endpoint": 10,
+    "slowest_p90_ms": 511
+  },
+  "measures": "10 sequential calls each of users.getProfile, messages.list (one id), messages.get(format=full) and threads.get(format=metadata), over the owner's own network; per endpoint the sample count and the p50, p90 and max in milliseconds, with the first sample reported separately as the cold-connection reading",
+  "notes": [],
+  "pre_registered_rules": [
+    "the candidate formula (max_http_requests x slowest p90) is registered as a bound, not adopted by this probe; adoption is the owner's decision after seeing the figures",
+    "p90 is the observed 9th of 10 sorted samples, not an interpolation; the cold first sample is included in the percentiles and also reported on its own",
+    "a call that fails for any reason other than rate limiting ends that endpoint's series and is reported as a short series, never as a zero-millisecond sample"
+  ],
+  "probe": "PF-21-endpoint-latency",
+  "quota_budget_units": 660,
+  "recorded_at": "2026-09-07T05:37:34.541301+00:00",
+  "title": "Wall-clock latency per Gmail endpoint, from the owner's machine",
+  "validates": "AD A.7's max_server_ms = 2000 as a deadline that can actually spend the same table's max_http_requests = 24: the two agree only if one request completes in 83 ms",
+  "verdict": "fail"
+}

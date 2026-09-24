@@ -1,0 +1,36 @@
+# F13 / F16 / F17 mechanism bypass probes on a manifest JSON (argv[1]). Written before running; not tuned.
+import json,re,sys,datetime as dt
+from collections import defaultdict
+from email.utils import parsedate_to_datetime
+sys.path.insert(0,'harness/src')
+from mailweave_harness.evaluation import queryfree as qf
+from mailweave_harness.seed.world import ENTITIES
+m=json.load(open(sys.argv[1])); T=defaultdict(list)
+for x in m['messages']: T[x['thread_key']].append(x)
+for v in T.values(): v.sort(key=lambda x:x['position'])
+formals=[e.formal for e in ENTITIES]; NEG=('hearsay','proposal','objection','reminder','hedge')
+S=lambda x: qf._strip(x['body'])
+r13=[0,0]; r16=[0,0,0]; r17=[0,0,0]
+for t in m['answer_key']['threads']:
+    ms=T[t['thread_key']]; terms=qf.subject_terms(ms[0]['subject']); ev=t['evidence_positions']
+    names=lambda x: any(s in S(x) for s in terms)
+    if t['family']=='F13':
+        day=dt.date.fromisoformat(t['facts']['event_on']); c=[]
+        for x in ms:
+            if parsedate_to_datetime(x['date_rfc2822']).date()<=day or not names(x): continue
+            if not (qf._VALUE.search(S(x)) or any(f in S(x) and f not in terms for f in formals)): continue
+            cc=qf.cue_counts(S(x))
+            if any(cc[k] for k in NEG): continue
+            c.append(x['position'])
+        r13[0]+=1; r13[1]+= bool(c) and c[0] in ev
+    if t['family']=='F16' and t['answer']:
+        conf=int(t['facts']['confirmation_at']); AD=re.compile(r"adopt|signature|signed|executed",re.I)
+        c=[x['position'] for x in ms if names(x) and AD.search(S(x))]
+        r16[0]+=1; r16[1]+= t['answer'] in S(ms[conf]); r16[2]+= c==[conf]
+    if t['family']=='F17':
+        REV=re.compile(r"revers|scrap that|moved on|change of position|ignore the above|out of date already|no longer|instead",re.I)
+        c=[x['position'] for x in ms if names(x) and REV.search(S(x))]
+        r17[0]+=1; r17[1]+= bool(c) and c[-1] in ev; r17[2]+= c==ev
+print(f'F13: earliest post-event, entity-naming, value-bearing message with no qf-1 negative cue is the evidence in {r13[1]}/{r13[0]} (no reply graph used)')
+print(f'F16: confirmation states the adopted figure in {r16[1]}/{r16[0]}; it is the only adoption-worded message naming the entity in {r16[2]}/{r16[0]}')
+print(f'F17: newest reversal-worded message naming the entity is the answer in {r17[1]}/{r17[0]}; the only such message in {r17[2]}/{r17[0]} (no reply graph, no query)')
