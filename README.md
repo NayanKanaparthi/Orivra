@@ -29,24 +29,24 @@ is correct or complete.
 
 ## Install
 
-**Release status: private draft. There is no public installer release yet.** The owner has
-reported successful installation and setup of the earlier configured beta on their Mac.
-The MIT candidate is rebuilt; Google's Gmail data-access verification remains incomplete.
-The [launch packet](docs/releases/LAUNCH_PACKET_0.2.0-beta.1.md) records preparation of that
-exact installer, and [known limitations](docs/KNOWN_LIMITATIONS.md) explain what early users
-should expect. Preparation does not announce public availability.
+**Public experimental beta: [download MailWeave 0.2.0-beta.1](https://github.com/NayanKanaparthi/Orivra/releases/tag/v0.2.0-beta.1).**
+This is a prerelease, not a stable release or a Google-approved app. Google's Gmail data-access
+verification remains incomplete, repository CI is not green, and some release checks remain
+unverified. Read the [known limitations](docs/KNOWN_LIMITATIONS.md) before connecting.
+The [launch packet](docs/releases/LAUNCH_PACKET_0.2.0-beta.1.md) preserves the verification
+record; publication does not turn those outstanding checks into passes.
 
 - **Claude Desktop extension:** Apple Silicon Mac, macOS 14 or later. Python and the app's
   Google OAuth client are included; users do not need Terminal or their own Google Cloud
-  project. Follow the [desktop installation guide](docs/INSTALL_DESKTOP_BETA.md) if you have
-  received the beta installer.
+  project. Download the `.mcpb` asset and follow the
+  [desktop installation guide](docs/INSTALL_DESKTOP_BETA.md).
 - **Advanced / Self-managed:** run from source with your own Google Cloud project and Desktop
   OAuth client. The [command-line setup guide](docs/SETUP.md) remains available. Google's
   requirements still apply to your project.
 
-The intended download destination is this repository's
-[Releases page](https://github.com/NayanKanaparthi/Orivra/releases). No public asset is available
-there yet; do not treat a source-code archive as the desktop installer.
+The installer is **`Orivra-Beta-0.2.0-beta.1.mcpb`**, attached to the
+[beta release](https://github.com/NayanKanaparthi/Orivra/releases/tag/v0.2.0-beta.1) alongside
+`SHA256SUMS`. The source-code ZIP is not the desktop installer.
 
 ## Your mail and your permissions
 
@@ -98,7 +98,7 @@ The repository contains `orivra/` (evidence navigation and desktop setup), `serv
 `tools/`, and `docs/`.
 
 The [desktop engineering notes](docs/DESKTOP_BETA.md) describe packaging and historical checks.
-[Draft release notes](docs/releases/0.2.0-beta.1.md) identify the exact candidate artifact.
+[Release notes](docs/releases/0.2.0-beta.1.md) identify the exact published artifact.
 
 ## Licence
 

@@ -1,5 +1,16 @@
 # MailWeave beta launch packet
 
+**Publication update — 2026-09-24:** the owner explicitly authorized the public experimental
+beta with the previously recorded Google-verification and engineering limitations unresolved.
+The existing installer is published unchanged as
+[`v0.2.0-beta.1`](https://github.com/NayanKanaparthi/Orivra/releases/tag/v0.2.0-beta.1).
+The preparation record below describes the earlier private-draft state and is retained as
+historical evidence. Its unexecuted handoff list is not a claim that every listed requirement
+was completed. No release criterion has been marked PASS or Google requirement waived by
+publication; no Google settings, product code, or installer bytes were changed.
+
+## Original preparation record
+
 **Preparation only — not published, not Google-approved, and not a release-gate waiver.**
 This is the single handoff for the owner's request to prepare the existing beta for launch.
 The exact installer is frozen; no new product features, dependency upgrades, model changes,

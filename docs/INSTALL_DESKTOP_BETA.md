@@ -3,10 +3,11 @@
 This is the no-Terminal path for Claude Desktop. You do not create a Google Cloud project,
 download an OAuth JSON file, or install Python yourself.
 
-**Availability:** an MIT-licensed candidate has been rebuilt for the private draft release.
-The owner reported successful installation and setup of its earlier invite-only build; the
-new candidate has not been reinstalled in Claude Desktop. These instructions are for a beta
-file supplied by the maintainer; they do not announce a public launch.
+**Availability:** [MailWeave 0.2.0-beta.1 is a public experimental prerelease](https://github.com/NayanKanaparthi/Orivra/releases/tag/v0.2.0-beta.1),
+licensed under MIT. Google data-access verification remains incomplete. The owner reported
+successful installation and setup of the earlier build; the MIT build's executable product
+contents are unchanged and its packaged startup was checked separately, not reinstalled in
+Claude Desktop. See the verification record below for the limits of these checks.
 
 Read the [known limitations](KNOWN_LIMITATIONS.md) before connecting. The
 [launch packet](releases/LAUNCH_PACKET_0.2.0-beta.1.md) identifies the exact MIT candidate and
@@ -22,9 +23,8 @@ its verification results; do not use the older invite-only installer's checksum.
 - Space for a 346 MB installer, about 1.16 GB unpacked, and about 1.27 GB of downloaded models
   (decimal units). Allow additional temporary space during installation and downloads.
 
-The exact candidate file is **`Orivra-Beta-0.2.0-beta.1.mcpb`**. When a release is published,
-the maintainer will attach the installer and checksum to
-[Orivra Releases](https://github.com/NayanKanaparthi/Orivra/releases). Only a private draft exists.
+Download **`Orivra-Beta-0.2.0-beta.1.mcpb`** and its `SHA256SUMS` companion from the
+[beta release](https://github.com/NayanKanaparthi/Orivra/releases/tag/v0.2.0-beta.1).
 Do not download a similarly named file from an unrelated repository. The source ZIP is not
 the installer.
 
